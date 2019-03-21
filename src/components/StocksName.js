@@ -171,7 +171,6 @@ class StocksName extends React.Component {
         }
     }
     render() {
-        console.log("in render", this.state.currenttimeseries)
         return (
             <div>
                 <GridContainer>

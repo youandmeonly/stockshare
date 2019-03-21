@@ -167,8 +167,6 @@ class StocksName extends React.Component {
             })
             this.state.currenttimeseries = ''
             this.apiType = ''
-            this.graphdata.labels = []
-            this.xaxisLabels = []
             this.props.backToNormalState()
         }
     }

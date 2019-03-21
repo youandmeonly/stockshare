@@ -85,7 +85,9 @@ class App extends Component {
 
   clearAll = () =>{
     this.setState({
-        chart : {},
+        chart : {
+          labels : []
+        },
         singlesector : {},
         emptySelectedStocks : true
     })

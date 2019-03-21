@@ -14,7 +14,6 @@ class Chart extends React.Component{
     {
         this.setState({
             chartdata : newprops.graph,
-            
         })
     }
 

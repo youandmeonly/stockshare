@@ -5,7 +5,6 @@ import XLSX from 'xlsx'
 import MainGrid from '../styles/Maingrid'
 import GridContainer from '../styles/GridContainer'
 import SelectStocks from '../styles/SelectStocks'
-import FadeError from '../styles/FadeError'
 
 class StocksName extends React.Component {
     constructor() {
@@ -29,8 +28,15 @@ class StocksName extends React.Component {
         this.month1 = '1 Month'
         this.ytd = 'YTD'
     }
+    handleSelectedStocks = (data) => {
+        this.setState({
+            selectedStocks: data
+        })
+    }
 
     changeFile = (event) => {
+        const {showLoading, hideLoading} = this.props;
+        showLoading()
         const reader = new FileReader();
         reader.readAsArrayBuffer(event.target.files[0]);
         reader.onload = (instance) => function (instance) {
@@ -41,6 +47,7 @@ class StocksName extends React.Component {
             instance.setState({
                 stocksdata: data,
             })
+            hideLoading()
         }(this)
     }
 
@@ -61,6 +68,7 @@ class StocksName extends React.Component {
     }
 
     timeseriesapi = (selectedvalue) => {
+        const {showLoading, hideLoading, showSnackBar} = this.props;
         let api = ''
         let symbol = selectedvalue
         if (this.state.currenttimeseries === this.realtime) {
@@ -71,11 +79,16 @@ class StocksName extends React.Component {
             api = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + symbol + "&outputsize=full&apikey=HCINAQ4TW2SBN2Y8"
             this.apiType = '5 Day,1 Month,YTD'
         }
+        showLoading()
         fetch(api)
             .then(res => res.json())
             .then(
                 (result) => {
-
+                    if(result.hasOwnProperty('Notes') || result.hasOwnProperty('Note')) {
+                        showSnackBar('You have reached maximum requests count')
+                        hideLoading()
+                        return
+                    }
                     let timeseriesobj = result[Object.keys(result).find(series => series.includes('Time'))]
                     this.graphdata.labels = Object.keys(timeseriesobj).sort()
                     this.totaldays = this.graphdata.labels.length
@@ -98,9 +111,13 @@ class StocksName extends React.Component {
                     let yaxis = { data: yaxisdata, label: symbol, name: symbol, borderColor: this.props.getRandomColor(), borderWidth: 1,}
                     this.stocksarray.push(yaxis)
                     this.graphdata.datasets = this.stocksarray
-
                     this.props.renderchart(this.graphdata)
+                    hideLoading()
                 },
+                (error) => {
+                    hideLoading()
+                }
+
             )
     }
 
@@ -142,18 +159,18 @@ class StocksName extends React.Component {
         
     }
 
-    limitexceeded = (value) =>{
-        this.setState({
-            stockslimit : value
-        })
-    }
-
     componentWillReceiveProps(newprops)
     {
-        debugger
-        this.setState({
-            // selectedStocks : []
-        })
+        if(newprops.clearstocks){
+            this.setState({
+                selectedStocks : []
+            })
+            this.state.currenttimeseries = ''
+            this.apiType = ''
+            this.graphdata.labels = []
+            this.xaxisLabels = []
+            this.props.backToNormalState()
+        }
     }
     render() {
         console.log("in render", this.state.currenttimeseries)
@@ -164,10 +181,7 @@ class StocksName extends React.Component {
                         <PrimaryButton onChange={this.changeFile}>Upload File</PrimaryButton>
                     </MainGrid>
                     <MainGrid xs={6} elevation={0}>
-                        <SelectStocks stocksdata={this.state.stocksdata} rendertimeseriesgraph={this.rendertimeseriesgraph} limitexceeded = {(bool)=>this.limitexceeded(bool)} clearselectedstocks={this.state.selectedStocks}/>
-                    </MainGrid>
-                    <MainGrid xs={3} elevation={0}>
-                        <FadeError error = {this.state.stockslimit}/>
+                        <SelectStocks showSnackBar={this.props.showSnackBar} stocksdata={this.state.stocksdata} rendertimeseriesgraph={this.rendertimeseriesgraph}  clearselectedstocks={this.state.selectedStocks} handleSelectedStocks={this.handleSelectedStocks} multivalues={this.state.selectedStocks}/>
                     </MainGrid>
                 </GridContainer>
 

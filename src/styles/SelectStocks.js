@@ -13,11 +13,12 @@ import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { emphasize } from '@material-ui/core/styles/colorManipulator';
+import Fade from '@material-ui/core/Fade';
+import Popper from '@material-ui/core/Popper';
 
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    height: 250,
   },
   input: {
     display: 'flex',
@@ -62,112 +63,7 @@ const styles = theme => ({
   },
 });
 
-function NoOptionsMessage(props) {
-  return (
-    <Typography
-      color="textSecondary"
-      className={props.selectProps.classes.noOptionsMessage}
-      {...props.innerProps}
-    >
-      {props.children}
-    </Typography>
-  );
-}
 
-function inputComponent({ inputRef, ...props }) {
-  return <div ref={inputRef} {...props} />;
-}
-
-function Control(props) {
-  return (
-    <TextField
-      fullWidth
-      InputProps={{
-        inputComponent,
-        inputProps: {
-          className: props.selectProps.classes.input,
-          inputRef: props.innerRef,
-          children: props.children,
-          ...props.innerProps,
-        },
-      }}
-      {...props.selectProps.textFieldProps}
-    />
-  );
-}
-
-function Option(props) {
-  return (
-    <MenuItem
-      buttonRef={props.innerRef}
-      selected={props.isFocused}
-      component="div"
-      style={{
-        fontWeight: props.isSelected ? 500 : 400,
-      }}
-      {...props.innerProps}
-    >
-      {props.children}
-    </MenuItem>
-  );
-}
-
-function Placeholder(props) {
-  return (
-    <Typography
-      color="textSecondary"
-      className={props.selectProps.classes.placeholder}
-      {...props.innerProps}
-    >
-      {props.children}
-    </Typography>
-  );
-}
-
-function SingleValue(props) {
-  return (
-    <Typography className={props.selectProps.classes.singleValue} {...props.innerProps}>
-      {props.children}
-    </Typography>
-  );
-}
-
-function ValueContainer(props) {
-  return <div className={props.selectProps.classes.valueContainer}>{props.children}</div>;
-}
-
-function MultiValue(props) {
-  return (
-    <Chip
-      tabIndex={-1}
-      label={props.children}
-      className={classNames(props.selectProps.classes.chip, {
-        [props.selectProps.classes.chipFocused]: props.isFocused,
-      })}
-      onDelete={props.removeProps.onClick}
-      deleteIcon={<CancelIcon {...props.removeProps} />}
-    />
-  );
-}
-
-function Menu(props) {
-  return (
-    <Paper square className={props.selectProps.classes.paper} {...props.innerProps}>
-      {props.children}
-    </Paper>
-  );
-}
-
-const components = {
-  Control,
-  Menu,
-  MultiValue,
-  NoOptionsMessage,
-  Option,
-  Placeholder,
-//   SingleValue,
-  ValueContainer,
-};
 
 class IntegrationReactSelect extends React.Component {
   state = {
@@ -176,18 +72,148 @@ class IntegrationReactSelect extends React.Component {
     stockslist : this.props.stocksdata
   };
 
+  NoOptionsMessage = (props) => {
+    return (
+      <Typography
+        color="textSecondary"
+        className={props.selectProps.classes.noOptionsMessage}
+        {...props.innerProps}
+      >
+        {props.children}
+      </Typography>
+    );
+  }
+  
+  inputComponent = ({ inputRef, ...props })=> {
+    return <div ref={inputRef} {...props} />;
+  }
+  
+  Control = (props)=> {
+    return (
+      <div ref={(node) => { this.anchorEl = node; }}>
+      <TextField
+        fullWidth
+        InputProps={{
+          inputComponent: this.inputComponent,
+          inputProps: {
+            className: props.selectProps.classes.input,
+            inputRef: props.innerRef,
+            children: props.children,
+            ...props.innerProps,
+          },
+        }}
+        {...props.selectProps.textFieldProps}
+      />
+      </div>
+    );
+  }
+  
+  Option = (props) =>{
+    return (
+      <MenuItem
+        buttonRef={props.innerRef}
+        selected={props.isFocused}
+        component="div"
+        style={{
+          fontWeight: props.isSelected ? 500 : 400,
+        }}
+        {...props.innerProps}
+      >
+        {props.children}
+      </MenuItem>
+    );
+  }
+  
+  Placeholder=(props)=> {
+    return (
+      <Typography
+        color="textSecondary"
+        className={props.selectProps.classes.placeholder}
+        {...props.innerProps}
+      >
+        {props.children}
+      </Typography>
+    );
+  }
+  
+  SingleValue=(props)=> {
+    return (
+      <Typography className={props.selectProps.classes.singleValue} {...props.innerProps}>
+        {props.children}
+      </Typography>
+    );
+  }
+  
+  ValueContainer=(props)=> {
+    return <div className={props.selectProps.classes.valueContainer}>{props.children}</div>;
+  }
+  
+  MultiValue=(props)=> {
+    return (
+      <Chip
+        tabIndex={-1}
+        label={props.children}
+        className={classNames(props.selectProps.classes.chip, {
+          [props.selectProps.classes.chipFocused]: props.isFocused,
+        })}
+        onDelete={props.removeProps.onClick}
+        deleteIcon={<CancelIcon {...props.removeProps} />}
+      />
+    );
+  }
+  
+  Menu = (props) => {
+    return (
+      <Popper
+        open
+        anchorEl={this.anchorEl}
+        transition
+        placement="bottom-start"
+        disablePortal={false}
+        style={{ zIndex: 2147483601, width: this.anchorEl.clientWidth }}
+        modifiers={{
+          flip: {
+            enabled: false,
+          },
+          preventOverflow: {
+            enabled: true,
+            boundariesElement: 'window',
+          }
+        }}>
+        {({ TransitionProps }) => (
+          <Fade {...TransitionProps} timeout={150}>
+            <Paper square {...props.innerProps}>
+              {props.children}
+            </Paper>
+          </Fade>
+        )}
+      </Popper>
+    );
+  }
+
+  components = () => ({
+    Control: this.Control,
+    Menu: this.Menu,
+    MultiValue: this.MultiValue,
+    NoOptionsMessage: this.NoOptionsMessage,
+    Option: this.Option,
+    Placeholder: this.Placeholder,
+    ValueContainer: this.ValueContainer,
+  })
+
+
   handleChange = name => value => {
       
       if(value.length <= 3)
       {
-          {this.props.rendertimeseriesgraph(value)}
-          {this.props.limitexceeded(false)}
+          this.props.rendertimeseriesgraph(value)
+          this.props.handleSelectedStocks(value)
           this.setState({
                 [name]: value,
           });
       }
       else{
-          {this.props.limitexceeded(true)}
+        this.props.showSnackBar("You can select maximum three stocks")
       }
   };
 
@@ -216,10 +242,7 @@ class IntegrationReactSelect extends React.Component {
 
     
     return (
-      <div className={classes.root}>
-        <NoSsr>
-         
-          {/* <div className={classes.divider} /> */}
+      <div>
           <Select
             id="selectStocks"
             classes={classes}
@@ -231,13 +254,12 @@ class IntegrationReactSelect extends React.Component {
               },
             }}
             options={this.state.stockslist}
-            components={components}
-            value={this.state.multi}
+            components={this.components()}
+            value={this.props.multivalues}
             onChange={this.handleChange('multi')}
             placeholder="Stock Names"
             isMulti
           />
-        </NoSsr>
       </div>
     );
   }

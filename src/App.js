@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import MainGrid from './styles/Maingrid'
 import GridContainer from './styles/GridContainer'
 import StocksName from './components/StocksName'
-import FetchApi from './components/FetchApi'
 import LineGraph from './components/LineGraph'
 import Sector from './components/SectorGraph'
 import Title from './styles/AppTitle'
@@ -28,7 +27,6 @@ class App extends Component {
     const sectorkeys = Object.keys(this.state.fullsector)
     const sectorrank = sectorkeys.find(key => key.includes(sectorname))
     this.setState(() => {
-      console.log('this.state.fullsector[sectorrank]', this.state.fullsector[sectorrank])
       return {
         singlesector : this.state.fullsector[sectorrank]
     }})
@@ -49,15 +47,9 @@ class App extends Component {
       .then(res => res.json())
       .then(
         (result) => {
-          console.log('sectrdata api : ',result)
-          
             this.setState({
                 fullsector : result
             })
-        },
-        (error) => {
-            console.log("err")
-          
         }
       )
   }

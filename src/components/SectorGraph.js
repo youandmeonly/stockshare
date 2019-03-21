@@ -19,7 +19,6 @@ class Chart extends React.Component{
     }
 
     componentWillReceiveProps(newprops,oldprops){
-        console.log('changed sectr data : ',newprops)
         const bordercolor = []
         const bgcolor = []
         const hvcolor = []
@@ -44,19 +43,7 @@ class Chart extends React.Component{
         }))
     }
 
-    // componentWillMount = () =>
-    // {
-    //     if(Object.keys(this.state.sectordata) == 0)
-    //     {
-    //         console.log('fffffffff')
-    //         return false
-    //     }
-    //     else{
-    //         return true
-    //     }
-    // }
     render(){
-        console.log("data", this.state.chartdata)
         return(
             <Bar
                 data = {this.state.chartdata}

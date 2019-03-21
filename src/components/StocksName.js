@@ -1,6 +1,5 @@
 import React from 'react'
 import PrimaryButton from '../styles/PrimaryButton'
-import TextFieldBox from '../styles/TextFieldBox'
 import SecondaryButton from '../styles/SecondaryButton'
 import XLSX from 'xlsx'
 import MainGrid from '../styles/Maingrid'
@@ -34,13 +33,11 @@ class StocksName extends React.Component {
     changeFile = (event) => {
         const reader = new FileReader();
         reader.readAsArrayBuffer(event.target.files[0]);
-        console.log("file", event.target.files[0])
         reader.onload = (instance) => function (instance) {
             var data = new Uint8Array(reader.result);
             var wb = XLSX.read(data, { type: 'array' })
             const ws = wb.Sheets['Sheet1'];
             const data = XLSX.utils.sheet_to_json(ws, { raw: true });
-            console.log('excel', data)
             instance.setState({
                 stocksdata: data,
             })
@@ -80,10 +77,7 @@ class StocksName extends React.Component {
                 (result) => {
 
                     let timeseriesobj = result[Object.keys(result).find(series => series.includes('Time'))]
-                    console.log("----- tsobj",timeseriesobj)
-                    console.log("++--- result",result)
                     this.graphdata.labels = Object.keys(timeseriesobj).sort()
-                    console.log('total keys : ', this.graphdata.labels)
                     this.totaldays = this.graphdata.labels.length
                     this.xaxisLabels = this.graphdata.labels
                     if (this.state.currenttimeseries === this.month1) {
@@ -102,22 +96,15 @@ class StocksName extends React.Component {
                         yaxisdata.push(timeseriesobj[key]['4. close'])
                     }
                     let yaxis = { data: yaxisdata, label: symbol, name: symbol, borderColor: this.props.getRandomColor(), borderWidth: 1,}
-                    console.log('y axis', yaxis)
                     this.stocksarray.push(yaxis)
                     this.graphdata.datasets = this.stocksarray
 
                     this.props.renderchart(this.graphdata)
                 },
-
-                (error) => {
-                    console.log("err")
-                }
             )
     }
 
     rendertimeseriesgraph = (selectedvalues) => {
-        debugger;
-        console.log('this.state.currenttimeseries : ', this.state.currenttimeseries)
         this.setState({
             selectedStocks : selectedvalues
         })
@@ -130,8 +117,7 @@ class StocksName extends React.Component {
             {
                 this.props.renderchart({})
             }
-            // console.log('timeseris',this.graphdata)
-            // this.props.renderchart(this.graphdata)
+            
         }
     }
 
@@ -143,7 +129,6 @@ class StocksName extends React.Component {
                 currenttimeseries: timeseries
             }, ()=> {
                 if(!this.apiType.includes(timeseries) || this.apiType === ''){
-                    console.log("cuu", this.state.currenttimeseries)
                     this.rendertimeseriesgraph(this.state.selectedStocks)
                 }
                 else{

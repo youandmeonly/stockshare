@@ -16,15 +16,6 @@ const styles = theme => ({
   paper: {
     margin: theme.spacing.unit,
   },
-  svg: {
-    width: 100,
-    height: 100,
-  },
-  polygon: {
-    fill: theme.palette.common.white,
-    stroke: theme.palette.divider,
-    strokeWidth: 1,
-  },
 });
 
 class SimpleFade extends React.Component {

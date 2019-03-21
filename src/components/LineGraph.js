@@ -12,7 +12,6 @@ class Chart extends React.Component{
 
     componentWillReceiveProps = (newprops , old) =>
     {
-        console.log("newprops", newprops.graph)
         this.setState({
             chartdata : newprops.graph,
             

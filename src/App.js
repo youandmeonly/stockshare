@@ -5,6 +5,8 @@ import StocksName from './components/StocksName'
 import FetchApi from './components/FetchApi'
 import LineGraph from './components/LineGraph'
 import Sector from './components/SectorGraph'
+import Title from './styles/AppTitle'
+import SecondaryButton from './styles/SecondaryButton';
 
 class App extends Component {
   constructor(){
@@ -13,6 +15,7 @@ class App extends Component {
       chart : {},
       fullsector : null,
       singlesector : {},
+      emptySelectedStocks : []
     }
   }
   renderChart = (data) =>
@@ -32,6 +35,15 @@ class App extends Component {
     
   }
   
+  getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+  }
+
   componentDidMount = () => {
     fetch("https://www.alphavantage.co/query?function=SECTOR&apikey=demo")
       .then(res => res.json())
@@ -48,29 +60,34 @@ class App extends Component {
           
         }
       )
-}
+  }
 
+  clearAll = () =>{
+    this.setState({
+        chart : {},
+        singlesector : {},
+        emptySelectedStocks : []
+    })
+  }
   render() {
-    console.log('sectrdata state : ',this.state.fullsector)
-    console.log("graph",this.state.chart)
-    console.log("state.sector", this.state.singlesector)
+    
     return (
       <div>
+        <Title />
         <GridContainer>
           <MainGrid xs={12}>
-            <StocksName sectordata = {this.getSectorData} renderchart = {this.renderChart}/>
+            <StocksName sectordata = {this.getSectorData} renderchart = {this.renderChart} getRandomColor={this.getRandomColor} clearstocks={this.state.emptySelectedStocks}/>
+          </MainGrid>
+          <MainGrid xs={6}>
+            <LineGraph graph = {this.state.chart}  />
+          </MainGrid>
+          <MainGrid xs={6}>
+            <Sector sector={this.state.singlesector} getRandomColor={this.getRandomColor}/>
           </MainGrid>
           <MainGrid xs={12}>
-            <LineGraph graph = {this.state.chart} />
+            <SecondaryButton onClick={this.clearAll}>Clear All</SecondaryButton>
           </MainGrid>
-          <MainGrid xs={12}>
-            <Sector sector={this.state.singlesector} />
-          </MainGrid>
-          {/* <MainGrid>
-            <FetchApi renderchart = {this.renderChart}/>
-          </MainGrid> */}
         </GridContainer>
-        
       </div>
     );
   }

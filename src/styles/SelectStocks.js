@@ -173,24 +173,22 @@ class IntegrationReactSelect extends React.Component {
   state = {
     single: null,
     multi: null,
-    stockslist : [{"Stockname" : "ask"},
-                {"Stockname" : "iu"},
-                {"Stockname" : "kj"},
-                {"Stockname" : "kld"},].map(suggestion => ({
-        value: suggestion.Stockname,
-        label: suggestion[Object.keys(suggestion)],
-      }))
+    stockslist : this.props.stocksdata
   };
 
   handleChange = name => value => {
-      console.log("value",value)
-      {this.props.rendertimeseriesgraph(value)}
+      
       if(value.length <= 3)
       {
-            this.setState({
+          {this.props.rendertimeseriesgraph(value)}
+          {this.props.limitexceeded(false)}
+          this.setState({
                 [name]: value,
-            });
-        }
+          });
+      }
+      else{
+          {this.props.limitexceeded(true)}
+      }
   };
 
   componentWillReceiveProps = (newprops , oldprops) =>{
@@ -198,13 +196,10 @@ class IntegrationReactSelect extends React.Component {
             stockslist : newprops.stocksdata.map(suggestion => ({
                 value: suggestion[Object.keys(suggestion)[1]],
                 label: suggestion[Object.keys(suggestion)[0]]+' - '+suggestion[Object.keys(suggestion)[1]],
-              }))
+              })),
+            multi : newprops.clearselectedstocks
         })
   }
-
-componentDidUpdate(){
-    // {this.props.rendertimeseriesgraph(this.state.multi)}
-}
 
   render() {
     const { classes, theme ,stocksdata} = this.props;
@@ -226,7 +221,7 @@ componentDidUpdate(){
          
           {/* <div className={classes.divider} /> */}
           <Select
-            id = 'selectedstocks'
+            id="selectStocks"
             classes={classes}
             styles={selectStyles}
             textFieldProps={{

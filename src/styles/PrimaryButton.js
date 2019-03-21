@@ -18,14 +18,15 @@ function OutlinedButtons(props) {
     <div>
       
       <input
-        accept="*"
+        accept=".xlsx"
         className={classes.input}
         id="outlined-button-file"
         multiple
         type="file"
+        onChange={onChange}
       />
       <label htmlFor="outlined-button-file">
-        <Button variant="contained" component="span" color="primary" className={classes.button} onChange={onChange}>
+        <Button variant="contained" component="span" color="primary" className={classes.button} >
           {children}
         </Button>
       </label>

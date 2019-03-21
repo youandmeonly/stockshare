@@ -1,68 +1,108 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import InputBase from '@material-ui/core/InputBase';
+import { fade } from '@material-ui/core/styles/colorManipulator';
+import { withStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
-import Logo from './Logo'
-import Avatar from '@material-ui/core/Avatar';
-import deepOrange from '@material-ui/core/colors/deepOrange';
-import Grid from '@material-ui/core/Grid';
+import SearchIcon from '@material-ui/icons/Search';
 
 const styles = theme => ({
   root: {
+    width: '100%',
+  },
+  grow: {
     flexGrow: 1,
   },
   menuButton: {
-    marginLeft: -18,
-    marginRight: 10,
+    marginLeft: -12,
+    marginRight: 20,
   },
-  orangeAvatar: {
-    margin: 10,
-    color: '#fff',
-    backgroundColor: deepOrange[500],
+  title: {
+    display: 'none',
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
+    },
   },
-  outer: {
-    paddingRight: theme.spacing.unit ,
-    paddingLeft: theme.spacing.unit * 20,
-    float: 'right'
-  }
+  search: {
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing.unit,
+      width: 'auto',
+    },
+  },
+  searchIcon: {
+    width: theme.spacing.unit * 9,
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputRoot: {
+    color: 'inherit',
+    width: '100%',
+  },
+  inputInput: {
+    paddingTop: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit,
+    paddingLeft: theme.spacing.unit * 10,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: 120,
+      '&:focus': {
+        width: 200,
+      },
+    },
+  },
 });
 
-function DenseAppBar(props) {
+function SearchAppBar(props) {
   const { classes } = props;
   return (
     <div className={classes.root}>
       <AppBar position="static">
-        <Toolbar variant="dense">
-          <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+        <Toolbar>
+          <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" color="inherit">
+          <Typography className={classes.title} variant="h6" color="inherit" noWrap>
             Share Market
           </Typography>
-          <Grid justify="center" alignItems="center" className={classes.outer}>
-          <Avatar className={classes.orangeAvatar}>VK</Avatar>
-          </Grid>
-          <IconButton
-                // aria-owns={isMenuOpen ? 'material-appbar' : undefined}
-                aria-haspopup="true"
-                onClick={() => console.log('hai')}
-                color="inherit"
-              >
-                <Avatar className={classes.orangeAvatar}>VK</Avatar>
-              </IconButton>
-          {/* <Logo /> */}
+          <div className={classes.grow} />
+          <div className={classes.search}>
+            <div className={classes.searchIcon}>
+              <SearchIcon />
+            </div>
+            <InputBase
+              placeholder="Search…"
+              classes={{
+                root: classes.inputRoot,
+                input: classes.inputInput,
+              }}
+            />
+          </div>
         </Toolbar>
       </AppBar>
     </div>
   );
 }
 
-DenseAppBar.propTypes = {
+SearchAppBar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(DenseAppBar);
+export default withStyles(styles)(SearchAppBar);

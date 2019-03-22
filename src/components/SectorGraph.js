@@ -19,28 +19,31 @@ class Chart extends React.Component{
     }
 
     componentWillReceiveProps(newprops,oldprops){
-        const bordercolor = []
-        const bgcolor = []
-        const hvcolor = []
-        for(let i=0; i<Object.keys(newprops.sector).length ;i++){
-            bordercolor.push(this.props.getRandomColor())
-            bgcolor.push(this.props.getRandomColor())
-            hvcolor.push(this.props.getRandomColor())
-        }
-            
-        this.setState(prevState => ({
-            chartdata: {
-                ...prevState.chartdata,
-                labels: Object.keys(newprops.sector),
-                datasets: [{
-                    ...prevState.chartdata.datasets[0],
-                    data: Object.values(newprops.sector).map(e => e.replace('%','')),
-                    backgroundColor: bgcolor,
-                    borderColor: bordercolor,
-                    hoverBackgroundColor: hvcolor,
-                }]
+        if(newprops.sectorChanged)
+        {
+            const bordercolor = []
+            const bgcolor = []
+            const hvcolor = []
+            for(let i=0; i<Object.keys(newprops.sector).length ;i++){
+                bordercolor.push(this.props.getRandomColor())
+                bgcolor.push(this.props.getRandomColor())
+                hvcolor.push(this.props.getRandomColor())
             }
-        }))
+                
+            this.setState(prevState => ({
+                chartdata: {
+                    ...prevState.chartdata,
+                    labels: Object.keys(newprops.sector),
+                    datasets: [{
+                        ...prevState.chartdata.datasets[0],
+                        data: Object.values(newprops.sector).map(e => e.replace('%','')),
+                        backgroundColor: bgcolor,
+                        borderColor: bordercolor,
+                        hoverBackgroundColor: hvcolor,
+                    }]
+                }
+            }))
+        }
     }
 
     render(){

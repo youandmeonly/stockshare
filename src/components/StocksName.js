@@ -5,6 +5,8 @@ import XLSX from 'xlsx'
 import MainGrid from '../styles/Maingrid'
 import GridContainer from '../styles/GridContainer'
 import SelectStocks from '../styles/SelectStocks'
+import Sector from './SectorGraph'
+import LineGraph from './LineGraph'
 
 class StocksName extends React.Component {
     constructor() {
@@ -18,20 +20,19 @@ class StocksName extends React.Component {
         this.totaldays = 0
         this.xaxisLabels = []
         this.state = {
+            chart : {},
+            fullsector : null,
+            singlesector : {},
             stocksdata: [],
             currenttimeseries: '',
             selectedStocks: [],
             stockslimit: false,
+            sectorChanged: false,
         }
         this.realtime = 'Real-Time'
         this.day5 = '5 Day'
         this.month1 = '1 Month'
         this.ytd = 'YTD'
-    }
-    handleSelectedStocks = (data) => {
-        this.setState({
-            selectedStocks: data
-        })
     }
 
     changeFile = (event) => {
@@ -50,7 +51,12 @@ class StocksName extends React.Component {
             hideLoading()
         }(this)
     }
-
+    renderChart = (data) =>
+    {
+        this.setState({
+            chart : data,
+        })
+    }
     changeRangeOfApiData = () =>{
         
         if (this.state.currenttimeseries === this.month1) {
@@ -64,7 +70,7 @@ class StocksName extends React.Component {
             this.graphdata.labels = this.xaxisLabels.filter(i => i.includes(currentyear))
         }
 
-        this.props.renderchart(this.graphdata)
+        this.renderChart(this.graphdata)
     }
 
     timeseriesapi = (selectedvalue) => {
@@ -85,7 +91,7 @@ class StocksName extends React.Component {
             .then(
                 (result) => {
                     if(result.hasOwnProperty('Notes') || result.hasOwnProperty('Note')) {
-                        showSnackBar('You have reached maximum requests count')
+                        showSnackBar('You have reached Maximum requests count')
                         hideLoading()
                         return
                     }
@@ -108,10 +114,10 @@ class StocksName extends React.Component {
                     for (let key in timeseriesobj) {
                         yaxisdata.push(timeseriesobj[key]['4. close'])
                     }
-                    let yaxis = { data: yaxisdata, label: symbol, name: symbol, borderColor: this.props.getRandomColor(), borderWidth: 1,}
+                    let yaxis = { data: yaxisdata, label: symbol, name: symbol, borderColor: this.getRandomColor(), borderWidth: 1,}
                     this.stocksarray.push(yaxis)
                     this.graphdata.datasets = this.stocksarray
-                    this.props.renderchart(this.graphdata)
+                    this.renderChart(this.graphdata)
                     hideLoading()
                 },
                 (error) => {
@@ -132,18 +138,24 @@ class StocksName extends React.Component {
             }
             if(selectedvalues.length === 0)
             {
-                this.props.renderchart({})
+                this.renderChart({labels:[]})
             }
             
         }
     }
-
+    renderonlytimseriesgraph = (selectedvalues)=>{
+        this.rendertimeseriesgraph(selectedvalues)
+        this.setState({
+            sectorChanged: false
+        })
+    }
     apiCall = (timeseries) => {
         if (timeseries !== this.state.currenttimeseries) 
         {
-            this.props.sectordata(timeseries)
+            this.getSectorData(timeseries)
             this.setState({
-                currenttimeseries: timeseries
+                currenttimeseries: timeseries,
+                sectorChanged : true
             }, ()=> {
                 if(!this.apiType.includes(timeseries) || this.apiType === ''){
                     this.rendertimeseriesgraph(this.state.selectedStocks)
@@ -153,19 +165,54 @@ class StocksName extends React.Component {
                 }
             })
         }
-        else if(this.apiType === ''){
-            this.rendertimeseriesgraph(this.state.selectedStocks)
-        }
+        // else if(this.apiType === ''){
+        //     this.rendertimeseriesgraph(this.state.selectedStocks)
+        //     this.setState({
+        //         sectorChanged : false
+        //     })
+        // }
         
     }
+    getSectorData = (sectorname) =>{
+        const sectorkeys = Object.keys(this.state.fullsector)
+        const sectorrank = sectorkeys.find(key => key.includes(sectorname))
+        this.setState(() => {
+          return {
+            singlesector : this.state.fullsector[sectorrank]
+        }})
+      }
+      
+      getRandomColor() {
+          const letters = '0123456789ABCDEF';
+          let color = '#';
+          for (let i = 0; i < 6; i++) {
+              color += letters[Math.floor(Math.random() * 16)];
+          }
+          return color;
+      }
 
+      componentDidMount = () => {
+        fetch("https://www.alphavantage.co/query?function=SECTOR&apikey=demo")
+          .then(res => res.json())
+          .then(
+            (result) => {
+                this.setState({
+                    fullsector : result
+                })
+            }
+          )
+      }
     componentWillReceiveProps(newprops)
     {
         if(newprops.clearstocks){
             this.setState({
-                selectedStocks : []
+                selectedStocks : [],
+                chart : {
+                    labels : []
+                  },
+                singlesector : {},
+                currenttimeseries : ''
             })
-            this.state.currenttimeseries = ''
             this.apiType = ''
             this.props.backToNormalState()
         }
@@ -178,7 +225,7 @@ class StocksName extends React.Component {
                         <PrimaryButton onChange={this.changeFile}>Upload File</PrimaryButton>
                     </MainGrid>
                     <MainGrid xs={6} elevation={0}>
-                        <SelectStocks showSnackBar={this.props.showSnackBar} stocksdata={this.state.stocksdata} rendertimeseriesgraph={this.rendertimeseriesgraph}  clearselectedstocks={this.state.selectedStocks} handleSelectedStocks={this.handleSelectedStocks} multivalues={this.state.selectedStocks}/>
+                        <SelectStocks showSnackBar={this.props.showSnackBar} stocksdata={this.state.stocksdata} renderonlytimseriesgraph={this.renderonlytimseriesgraph}  clearselectedstocks={this.state.selectedStocks} multivalues={this.state.selectedStocks}/>
                     </MainGrid>
                 </GridContainer>
 
@@ -195,7 +242,15 @@ class StocksName extends React.Component {
                     <MainGrid xs={3} elevation={0}>
                         <SecondaryButton onClick={() => this.apiCall(this.ytd)}>{this.ytd}</SecondaryButton>
                     </MainGrid>
+
+                    <MainGrid xs={6}>
+                        <LineGraph graph = {this.state.chart}  />
+                    </MainGrid>
+                    <MainGrid xs={6}>
+                        <Sector sector={this.state.singlesector} getRandomColor={this.getRandomColor} sectorChanged={this.state.sectorChanged}/>
+                    </MainGrid>
                 </GridContainer>
+
             </div>
         );
     }

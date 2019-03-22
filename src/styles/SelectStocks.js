@@ -206,14 +206,13 @@ class IntegrationReactSelect extends React.Component {
       
       if(value.length <= 3)
       {
-          this.props.rendertimeseriesgraph(value)
-          this.props.handleSelectedStocks(value)
+          this.props.renderonlytimseriesgraph(value)
           this.setState({
                 [name]: value,
           });
       }
       else{
-        this.props.showSnackBar("You can select maximum three stocks")
+        this.props.showSnackBar("You can select only upto three Stocks")
       }
   };
 

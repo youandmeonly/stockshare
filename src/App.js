@@ -13,9 +13,6 @@ class App extends Component {
   constructor(){
     super()
     this.state = {
-      chart : {},
-      fullsector : null,
-      singlesector : {},
       emptySelectedStocks: false,
       loading: false,
       snackbar: false,
@@ -47,48 +44,8 @@ class App extends Component {
     })
   }
 
-  renderChart = (data) =>
-  {
-    this.setState({
-      chart : data,
-    })
-  }
-  getSectorData = (sectorname) =>{
-    const sectorkeys = Object.keys(this.state.fullsector)
-    const sectorrank = sectorkeys.find(key => key.includes(sectorname))
-    this.setState(() => {
-      return {
-        singlesector : this.state.fullsector[sectorrank]
-    }})
-  }
-  
-  getRandomColor() {
-      const letters = '0123456789ABCDEF';
-      let color = '#';
-      for (let i = 0; i < 6; i++) {
-          color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
-  }
-
-  componentDidMount = () => {
-    fetch("https://www.alphavantage.co/query?function=SECTOR&apikey=demo")
-      .then(res => res.json())
-      .then(
-        (result) => {
-            this.setState({
-                fullsector : result
-            })
-        }
-      )
-  }
-
   clearAll = () =>{
     this.setState({
-        chart : {
-          labels : []
-        },
-        singlesector : {},
         emptySelectedStocks : true
     })
   }
@@ -99,21 +56,15 @@ class App extends Component {
     })
   }
 
-
   render() {
     return (
       <div>
         <Title />
         <GridContainer>
-          <MainGrid xs={12}>
-            <StocksName backToNormalState={this.backToNormalState} sectordata = {this.getSectorData} renderchart = {this.renderChart} getRandomColor={this.getRandomColor} clearstocks={this.state.emptySelectedStocks} showLoading={this.showLoading} hideLoading={this.hideLoading} showSnackBar={this.showSnackBar} />
+          <MainGrid xs={12} elevation={0}>
+            <StocksName backToNormalState={this.backToNormalState}  clearstocks={this.state.emptySelectedStocks} showLoading={this.showLoading} hideLoading={this.hideLoading} showSnackBar={this.showSnackBar} />
           </MainGrid>
-          <MainGrid xs={6}>
-            <LineGraph graph = {this.state.chart}  />
-          </MainGrid>
-          <MainGrid xs={6}>
-            <Sector sector={this.state.singlesector} getRandomColor={this.getRandomColor}/>
-          </MainGrid>
+          
           <MainGrid xs={12}>
             <SecondaryButton onClick={this.clearAll}>Clear All</SecondaryButton>
           </MainGrid>

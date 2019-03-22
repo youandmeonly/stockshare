@@ -58,19 +58,20 @@ class StocksName extends React.Component {
         })
     }
     changeRangeOfApiData = () =>{
-        
-        if (this.state.currenttimeseries === this.month1) {
-            this.graphdata.labels = this.xaxisLabels.slice(this.totaldays - 30, this.totaldays)
+        if(this.state.selectedStocks.length !== 0)
+        {
+            if (this.state.currenttimeseries === this.month1) {
+                this.graphdata.labels = this.xaxisLabels.slice(this.totaldays - 30, this.totaldays)
+            }
+            else if (this.state.currenttimeseries === this.day5) {
+                this.graphdata.labels = this.xaxisLabels.slice(this.totaldays - 5, this.totaldays)
+            }
+            else if (this.state.currenttimeseries === this.ytd) {
+                let currentyear = new Date().getFullYear()
+                this.graphdata.labels = this.xaxisLabels.filter(i => i.includes(currentyear))
+            }
+            this.renderChart(this.graphdata)
         }
-        else if (this.state.currenttimeseries === this.day5) {
-            this.graphdata.labels = this.xaxisLabels.slice(this.totaldays - 5, this.totaldays)
-        }
-        else if (this.state.currenttimeseries === this.ytd) {
-            let currentyear = new Date().getFullYear()
-            this.graphdata.labels = this.xaxisLabels.filter(i => i.includes(currentyear))
-        }
-
-        this.renderChart(this.graphdata)
     }
 
     timeseriesapi = (selectedvalue) => {

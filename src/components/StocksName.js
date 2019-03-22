@@ -17,7 +17,6 @@ class StocksName extends React.Component {
         }
         this.stocksarray = []
         this.apiType = ''
-        this.totaldays = 0
         this.xaxisLabels = []
         this.state = {
             chart : {},
@@ -61,10 +60,10 @@ class StocksName extends React.Component {
         if(this.state.selectedStocks.length !== 0)
         {
             if (this.state.currenttimeseries === this.month1) {
-                this.graphdata.labels = this.xaxisLabels.slice(this.totaldays - 30, this.totaldays)
+                this.graphdata.labels = this.xaxisLabels.slice(0,30)
             }
             else if (this.state.currenttimeseries === this.day5) {
-                this.graphdata.labels = this.xaxisLabels.slice(this.totaldays - 5, this.totaldays)
+                this.graphdata.labels = this.xaxisLabels.slice(0,5)
             }
             else if (this.state.currenttimeseries === this.ytd) {
                 let currentyear = new Date().getFullYear()
@@ -97,18 +96,17 @@ class StocksName extends React.Component {
                         return
                     }
                     let timeseriesobj = result[Object.keys(result).find(series => series.includes('Time'))]
-                    this.graphdata.labels = Object.keys(timeseriesobj).sort()
-                    this.totaldays = this.graphdata.labels.length
+                    this.graphdata.labels = Object.keys(timeseriesobj)
                     this.xaxisLabels = this.graphdata.labels
                     if (this.state.currenttimeseries === this.month1) {
-                        this.graphdata.labels = this.graphdata.labels.slice(this.totaldays - 30, this.totaldays)
+                        this.graphdata.labels = this.xaxisLabels.slice(0,30)
                     }
                     else if (this.state.currenttimeseries === this.day5) {
-                        this.graphdata.labels = this.graphdata.labels.slice(this.totaldays - 5, this.totaldays)
+                        this.graphdata.labels = this.xaxisLabels.slice(0,5)
                     }
                     else if (this.state.currenttimeseries === this.ytd) {
                         let currentyear = new Date().getFullYear()
-                        this.graphdata.labels = this.graphdata.labels.filter(i => i.includes(currentyear))
+                        this.graphdata.labels = this.xaxisLabels.filter(i => i.includes(currentyear))
                     }
 
                     let yaxisdata = []

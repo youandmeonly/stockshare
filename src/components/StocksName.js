@@ -1,12 +1,11 @@
 import React from 'react'
-import PrimaryButton from '../styles/PrimaryButton'
 import SecondaryButton from '../styles/SecondaryButton'
-import XLSX from 'xlsx'
 import MainGrid from '../styles/Maingrid'
 import GridContainer from '../styles/GridContainer'
 import SelectStocks from '../styles/SelectStocks'
 import Sector from './SectorGraph'
 import LineGraph from './LineGraph'
+import Papa from 'papaparse'
 
 class StocksName extends React.Component {
     constructor() {
@@ -34,22 +33,6 @@ class StocksName extends React.Component {
         this.ytd = 'YTD'
     }
 
-    changeFile = (event) => {
-        const {showLoading, hideLoading} = this.props;
-        showLoading()
-        const reader = new FileReader();
-        reader.readAsArrayBuffer(event.target.files[0]);
-        reader.onload = (instance) => function (instance) {
-            var data = new Uint8Array(reader.result);
-            var wb = XLSX.read(data, { type: 'array' })
-            const ws = wb.Sheets['Sheet1'];
-            const data = XLSX.utils.sheet_to_json(ws, { raw: true });
-            instance.setState({
-                stocksdata: data,
-            })
-            hideLoading()
-        }(this)
-    }
     renderChart = (data) =>
     {
         this.setState({
@@ -119,7 +102,7 @@ class StocksName extends React.Component {
                     this.renderChart(this.graphdata)
                     hideLoading()
                 },
-                (error) => {
+                () => {
                     hideLoading()
                 }
 
@@ -163,14 +146,7 @@ class StocksName extends React.Component {
                     this.changeRangeOfApiData()
                 }
             })
-        }
-        // else if(this.apiType === ''){
-        //     this.rendertimeseriesgraph(this.state.selectedStocks)
-        //     this.setState({
-        //         sectorChanged : false
-        //     })
-        // }
-        
+        }        
     }
     getSectorData = (sectorname) =>{
         const sectorkeys = Object.keys(this.state.fullsector)
@@ -200,6 +176,32 @@ class StocksName extends React.Component {
                 })
             }
           )
+        this.populateData()
+      }
+
+      populateData = () => {
+        const {showLoading, hideLoading} = this.props;
+        showLoading()
+        let arr = []
+        let cnt = 0
+        Papa.parse("/stocksList.csv", {
+          download: true,
+          step: (res) => {
+            if (cnt > 0) {
+              arr.push({
+                key: res.data[0],
+                value: res.data[1]
+              })
+            }
+            cnt++
+          },
+          complete: () => {
+            this.setState({
+                stocksdata: arr,
+            })
+            hideLoading()
+          }
+        })
       }
     componentWillReceiveProps(newprops)
     {
@@ -220,9 +222,7 @@ class StocksName extends React.Component {
         return (
             <div>
                 <GridContainer>
-                    <MainGrid xs={3} elevation={0}>
-                        <PrimaryButton onChange={this.changeFile}>Upload File</PrimaryButton>
-                    </MainGrid>
+                    <MainGrid xs={3} elevation={0}></MainGrid>
                     <MainGrid xs={6} elevation={0}>
                         <SelectStocks showSnackBar={this.props.showSnackBar} stocksdata={this.state.stocksdata} renderonlytimseriesgraph={this.renderonlytimseriesgraph}  clearselectedstocks={this.state.selectedStocks} multivalues={this.state.selectedStocks}/>
                     </MainGrid>

@@ -203,7 +203,6 @@ class IntegrationReactSelect extends React.Component {
 
 
   handleChange = name => value => {
-      
       if(value.length <= 3)
       {
           this.props.renderonlytimseriesgraph(value)
@@ -217,17 +216,17 @@ class IntegrationReactSelect extends React.Component {
   };
 
   componentWillReceiveProps = (newprops , oldprops) =>{
-        this.setState({
-            stockslist : newprops.stocksdata.map(suggestion => ({
-                value: suggestion[Object.keys(suggestion)[1]],
-                label: suggestion[Object.keys(suggestion)[0]]+' - '+suggestion[Object.keys(suggestion)[1]],
-              })),
-            multi : newprops.clearselectedstocks
-        })
+      this.setState({
+          stockslist : newprops.stocksdata.map(elem => ({
+            value: elem.value,
+            label: elem.key + ' - ' + elem.value,
+          })),
+          multi : newprops.clearselectedstocks
+      })
   }
 
   render() {
-    const { classes, theme ,stocksdata} = this.props;
+    const { classes, theme } = this.props;
     
     const selectStyles = {
       input: base => ({

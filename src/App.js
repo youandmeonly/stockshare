@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import MainGrid from './styles/Maingrid'
 import GridContainer from './styles/GridContainer'
 import StocksName from './components/StocksName'
-import LineGraph from './components/LineGraph'
-import Sector from './components/SectorGraph'
 import Title from './styles/AppTitle'
 import SecondaryButton from './styles/SecondaryButton';
 import CircularProgress from '@material-ui/core/CircularProgress';

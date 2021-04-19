@@ -7,6 +7,21 @@ import SecondaryButton from './styles/SecondaryButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
 
+import firebase from 'firebase/app'
+import 'firebase/analytics'
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDELbU_Hk7xQw_TvMFLERp6JMYC39vtUSY",
+  authDomain: "stocks-graph.firebaseapp.com",
+  projectId: "stocks-graph",
+  storageBucket: "stocks-graph.appspot.com",
+  messagingSenderId: "26623937350",
+  appId: "1:26623937350:web:593d514557a7fa783a3347",
+  measurementId: "G-CM445GNHD3"
+};
+firebase.initializeApp(firebaseConfig)
+firebase.analytics().logEvent('landed')
+
 class App extends Component {
   constructor() {
     super()

@@ -8,7 +8,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
 
 class App extends Component {
-  constructor(){
+  constructor() {
     super()
     this.state = {
       emptySelectedStocks: false,
@@ -42,9 +42,9 @@ class App extends Component {
     })
   }
 
-  clearAll = () =>{
+  clearAll = () => {
     this.setState({
-        emptySelectedStocks : true
+      emptySelectedStocks: true
     })
   }
 
@@ -60,9 +60,9 @@ class App extends Component {
         <Title />
         <GridContainer>
           <MainGrid xs={12} elevation={0}>
-            <StocksName backToNormalState={this.backToNormalState}  clearstocks={this.state.emptySelectedStocks} showLoading={this.showLoading} hideLoading={this.hideLoading} showSnackBar={this.showSnackBar} />
+            <StocksName backToNormalState={this.backToNormalState} clearstocks={this.state.emptySelectedStocks} showLoading={this.showLoading} hideLoading={this.hideLoading} showSnackBar={this.showSnackBar} />
           </MainGrid>
-          
+
           <MainGrid xs={12}>
             <SecondaryButton onClick={this.clearAll}>Clear All</SecondaryButton>
           </MainGrid>

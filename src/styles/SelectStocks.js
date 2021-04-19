@@ -69,7 +69,7 @@ class IntegrationReactSelect extends React.Component {
   state = {
     single: null,
     multi: null,
-    stockslist : this.props.stocksdata
+    stockslist: this.props.stocksdata
   };
 
   NoOptionsMessage = (props) => {
@@ -83,32 +83,32 @@ class IntegrationReactSelect extends React.Component {
       </Typography>
     );
   }
-  
-  inputComponent = ({ inputRef, ...props })=> {
+
+  inputComponent = ({ inputRef, ...props }) => {
     return <div ref={inputRef} {...props} />;
   }
-  
-  Control = (props)=> {
+
+  Control = (props) => {
     return (
       <div ref={(node) => { this.anchorEl = node; }}>
-      <TextField
-        fullWidth
-        InputProps={{
-          inputComponent: this.inputComponent,
-          inputProps: {
-            className: props.selectProps.classes.input,
-            inputRef: props.innerRef,
-            children: props.children,
-            ...props.innerProps,
-          },
-        }}
-        {...props.selectProps.textFieldProps}
-      />
+        <TextField
+          fullWidth
+          InputProps={{
+            inputComponent: this.inputComponent,
+            inputProps: {
+              className: props.selectProps.classes.input,
+              inputRef: props.innerRef,
+              children: props.children,
+              ...props.innerProps,
+            },
+          }}
+          {...props.selectProps.textFieldProps}
+        />
       </div>
     );
   }
-  
-  Option = (props) =>{
+
+  Option = (props) => {
     return (
       <MenuItem
         buttonRef={props.innerRef}
@@ -123,8 +123,8 @@ class IntegrationReactSelect extends React.Component {
       </MenuItem>
     );
   }
-  
-  Placeholder=(props)=> {
+
+  Placeholder = (props) => {
     return (
       <Typography
         color="textSecondary"
@@ -135,20 +135,20 @@ class IntegrationReactSelect extends React.Component {
       </Typography>
     );
   }
-  
-  SingleValue=(props)=> {
+
+  SingleValue = (props) => {
     return (
       <Typography className={props.selectProps.classes.singleValue} {...props.innerProps}>
         {props.children}
       </Typography>
     );
   }
-  
-  ValueContainer=(props)=> {
+
+  ValueContainer = (props) => {
     return <div className={props.selectProps.classes.valueContainer}>{props.children}</div>;
   }
-  
-  MultiValue=(props)=> {
+
+  MultiValue = (props) => {
     return (
       <Chip
         tabIndex={-1}
@@ -161,7 +161,7 @@ class IntegrationReactSelect extends React.Component {
       />
     );
   }
-  
+
   Menu = (props) => {
     return (
       <Popper
@@ -203,31 +203,30 @@ class IntegrationReactSelect extends React.Component {
 
 
   handleChange = name => value => {
-      if(value.length <= 3)
-      {
-          this.props.renderonlytimseriesgraph(value)
-          this.setState({
-                [name]: value,
-          });
-      }
-      else{
-        this.props.showSnackBar("You can select only upto three Stocks")
-      }
+    if (value.length <= 3) {
+      this.props.renderonlytimseriesgraph(value)
+      this.setState({
+        [name]: value,
+      });
+    }
+    else {
+      this.props.showSnackBar("You can select only upto three Stocks")
+    }
   };
 
-  componentWillReceiveProps = (newprops , oldprops) =>{
-      this.setState({
-          stockslist : newprops.stocksdata.map(elem => ({
-            value: elem.value,
-            label: elem.key + ' - ' + elem.value,
-          })),
-          multi : newprops.clearselectedstocks
-      })
+  componentWillReceiveProps = (newprops, oldprops) => {
+    this.setState({
+      stockslist: newprops.stocksdata.map(elem => ({
+        value: elem.value,
+        label: elem.key + ' - ' + elem.value,
+      })),
+      multi: newprops.clearselectedstocks
+    })
   }
 
   render() {
     const { classes, theme } = this.props;
-    
+
     const selectStyles = {
       input: base => ({
         ...base,
@@ -238,26 +237,26 @@ class IntegrationReactSelect extends React.Component {
       }),
     };
 
-    
+
     return (
       <div>
-          <Select
-            id="selectStocks"
-            classes={classes}
-            styles={selectStyles}
-            textFieldProps={{
-              label: 'Stock',
-              InputLabelProps: {
-                shrink: true,
-              },
-            }}
-            options={this.state.stockslist}
-            components={this.components()}
-            value={this.props.multivalues}
-            onChange={this.handleChange('multi')}
-            placeholder="Stock Names"
-            isMulti
-          />
+        <Select
+          id="selectStocks"
+          classes={classes}
+          styles={selectStyles}
+          textFieldProps={{
+            label: 'Stock',
+            InputLabelProps: {
+              shrink: true,
+            },
+          }}
+          options={this.state.stockslist}
+          components={this.components()}
+          value={this.props.multivalues}
+          onChange={this.handleChange('multi')}
+          placeholder="Stock Names"
+          isMulti
+        />
       </div>
     );
   }
